@@ -1,11 +1,11 @@
-# 👨‍👩‍👧‍👦 Recipt-api-base
+# 👨‍👩‍👧‍👦 Recipt-recipe
 Recipe + Reciept = **Recipt**
 
-MSA 환경 요리 레시피 웹 서비스 Toy Project MSA API 모듈 베이스 레포지토리 입니다.
+MSA 환경 요리 레시피 웹 서비스 Toy Project 중 레시피 MSA 모듈입니다.
 
-Recipt의 모든 MSA API 프로젝트는 이 레포지토리에서 시작합니다.
+체크된 것은 완료, 안된 건 머리 속에만 있는 것들..
 
-내가 프로젝트 새로 파기 귀찮기 때문에 만드는 것!
+아몰랑 아무거나 하고싶은대로
 
 ## 🧐 전체적인 기술 스택
 
