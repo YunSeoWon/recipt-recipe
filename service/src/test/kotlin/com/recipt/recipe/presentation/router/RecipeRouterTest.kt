@@ -1,13 +1,21 @@
 package com.recipt.recipe.presentation.router
 
 import com.ninjasquad.springmockk.MockkBean
+import com.recipt.core.enums.recipe.CategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.model.PageInfo
 import com.recipt.member.presentation.exception.GlobalErrorAttributes
 import com.recipt.member.presentation.exception.GlobalErrorWebExceptionHandler
 import com.recipt.recipe.application.recipe.RecipeQueryService
+import com.recipt.recipe.application.recipe.dto.RecipeDetail
 import com.recipt.recipe.application.recipe.dto.RecipeSearchQuery
 import com.recipt.recipe.application.recipe.dto.RecipeSummary
+import com.recipt.recipe.domain.recipe.entity.Recipe
+import com.recipt.recipe.domain.recipe.entity.RecipeCategory
+import com.recipt.recipe.domain.recipe.entity.RecipeContent
+import com.recipt.recipe.domain.recipe.entity.SubCooking
+import com.recipt.recipe.domain.recipe.vo.Categories
+import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 import com.recipt.recipe.domain.recipe.vo.Creator
 import com.recipt.recipe.presentation.filter.AccessTokenFilter
 import com.recipt.recipe.presentation.handler.RecipeHandler
@@ -25,7 +33,7 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
-import org.springframework.restdocs.request.RequestDocumentation.requestParameters
+import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -101,6 +109,60 @@ internal class RecipeRouterTest {
                         fieldWithPath("contents").type(JsonFieldType.ARRAY)
                             .description("레시피"),
                         *summary.toDocument("contents[].")
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `레시피 상세 조회`() {
+        val recipeNo = 1
+        val response = Recipe(
+            no = recipeNo,
+            title = "title",
+            introduction = null,
+            creator = Creator(1, "작성자"),
+            createDateTime = LocalDateTime.now(),
+            editDateTime = null,
+            difficulty = 1,
+            readCount = 1,
+            likeCount = 1,
+            postingCount = 1,
+            categories = Categories(
+                mainIngredientCategory = RecipeCategory(no = 1, title =  "주재료", type = CategoryType.MAIN_INGREDIENT),
+                kindCategory = RecipeCategory(no = 2, title = "종류", type = CategoryType.KIND)
+            ),
+            subCookings = listOf(
+                SubCooking(no = 1, name = "양념", cookingIngredients = listOf(
+                    CookingIngredient(name = "간장", amount = 1.0, unit = "큰술"),
+                    CookingIngredient(name = "고추장", amount = 2.0, unit = "큰술")
+                )),
+                SubCooking(no = 1, name = "주재료", cookingIngredients = listOf(
+                    CookingIngredient(name = "대패삼겹살", amount = 200.0, unit = "g"),
+                    CookingIngredient(name = "양파", amount = 0.5, unit = "개")
+                ))
+            ),
+            contents = listOf(
+                RecipeContent(no = 1, order = 1, content = "먼저 양념을 만들기 위해 간장과 고추장을 섞습니다.", expectTime = 20),
+                RecipeContent(no = 2, order = 2, content = "그 다음, 양파를 썰어놓습니다.", expectTime = 20)
+            )
+        ).let { RecipeDetail(it) }
+
+        coEvery { recipeQueryService.get(recipeNo) } returns response
+
+        webTestClient.get()
+            .uri("/recipes/{recipeNo}", recipeNo)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody().consumeWith(
+                WebTestClientRestDocumentation.document(
+                    "get-recipe-detail",
+                    pathParameters(
+                        parameterWithName("recipeNo").description("레시피 번호")
+                    ),
+                    responseFields(
+                        *response.toDocument()
                     )
                 )
             )

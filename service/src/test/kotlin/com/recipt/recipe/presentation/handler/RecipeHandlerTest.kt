@@ -55,4 +55,20 @@ internal class RecipeHandlerTest {
         coVerify { recipeQueryService.search(query) }
         assertEquals(HttpStatus.OK, result.statusCode())
     }
+
+    @Test
+    fun `레시피 조회`() {
+        val recipeNo = 1
+
+        val request = MockServerRequest.builder()
+            .pathVariable("recipeNo", recipeNo.toString())
+            .build()
+
+        coEvery { recipeQueryService.get(recipeNo) } returns mockk()
+
+        val result = runBlocking { recipeHandler.get(request) }
+
+        coVerify { recipeQueryService.get(recipeNo) }
+        assertEquals(HttpStatus.OK, result.statusCode())
+    }
 }

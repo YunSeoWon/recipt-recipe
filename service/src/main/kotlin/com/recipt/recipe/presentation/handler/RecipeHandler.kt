@@ -3,8 +3,10 @@ package com.recipt.recipe.presentation.handler
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.recipe.application.recipe.RecipeQueryService
 import com.recipt.recipe.application.recipe.dto.RecipeSearchQuery
+import com.recipt.recipe.presentation.pathVariableToPositiveIntOrThrow
 import com.recipt.recipe.presentation.queryParamToListOrNull
 import com.recipt.recipe.presentation.queryParamToPositiveIntOrNull
+import com.recipt.recipe.presentation.queryParamToPositiveIntOrThrow
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -43,7 +45,8 @@ class RecipeHandler(
     }
 
     suspend fun get(request: ServerRequest): ServerResponse {
+        val recipeNo = request.pathVariableToPositiveIntOrThrow("recipeNo")
 
-        return ok().bodyValueAndAwait("")
+        return ok().bodyValueAndAwait(recipeQueryService.get(recipeNo))
     }
 }

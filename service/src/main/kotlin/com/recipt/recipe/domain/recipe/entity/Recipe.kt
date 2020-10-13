@@ -15,7 +15,7 @@ data class Recipe(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recipe_no")
-    val no: Int,
+    val no: Int = 0,
 
     val title: String,
 
@@ -57,5 +57,9 @@ data class Recipe(
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST], orphanRemoval = true)
     @JoinColumn(name = "recipe_no")
-    val subCooking: List<SubCooking> = emptyList()
+    val subCookings: List<SubCooking> = emptyList(),
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST], orphanRemoval = true)
+    @JoinColumn(name = "recipe_no")
+    val contents: List<RecipeContent> = emptyList()
 )

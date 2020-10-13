@@ -17,7 +17,7 @@ data class RecipeCategory(
 
     @Convert(converter = CategoryTypeConverter::class)
     @Column(name = "category_type")
-    val categoryType: CategoryType,
+    val type: CategoryType,
 
     @Column(name = "category_image_url")
     val imageUrl: String? = null

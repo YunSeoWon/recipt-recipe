@@ -11,7 +11,7 @@ data class SubCooking(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sub_cooking_no")
-    val no: Int,
+    val no: Int = 0,
 
     @Column(name = "sub_cooking_name")
     val name: String,

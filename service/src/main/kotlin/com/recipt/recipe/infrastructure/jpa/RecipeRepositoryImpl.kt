@@ -2,21 +2,16 @@ package com.recipt.recipe.infrastructure.jpa
 
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.Projections
-import com.querydsl.jpa.JPAExpressions.select
-import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.model.PageInfo
 import com.recipt.recipe.application.recipe.dto.RecipeSearchQuery
 import com.recipt.recipe.domain.recipe.entity.QRecipe
-import com.recipt.recipe.domain.recipe.entity.QSubCooking
 import com.recipt.recipe.domain.recipe.entity.Recipe
 import com.recipt.recipe.domain.recipe.repository.RecipeRepositoryCustom
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 
 @Repository
 class RecipeRepositoryImpl: RecipeRepositoryCustom, AbstractReciptRepository(Recipe::class) {
     private val recipe = QRecipe.recipe
-    private val subCooking = QSubCooking.subCooking
 
     override fun search(searchQuery: RecipeSearchQuery): PageInfo<Recipe> {
         val predicate = BooleanBuilder().apply {
