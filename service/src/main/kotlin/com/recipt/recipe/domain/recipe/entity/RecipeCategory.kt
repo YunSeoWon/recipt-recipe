@@ -4,6 +4,9 @@ import com.recipt.core.enums.recipe.CategoryType
 import com.recipt.recipe.domain.converter.CategoryTypeConverter
 import javax.persistence.*
 
+/**
+ * categoryNo == type.code 로 맞추자!
+ */
 @Entity
 @Table(name = "RECIPE_CATEGORY")
 data class RecipeCategory(
@@ -21,4 +24,12 @@ data class RecipeCategory(
 
     @Column(name = "category_image_url")
     val imageUrl: String? = null
-)
+) {
+    companion object {
+        val NOTHING = RecipeCategory(
+            no = CategoryType.NOTHING.code,
+            title = "없음",
+            type = CategoryType.NOTHING
+        )
+    }
+}

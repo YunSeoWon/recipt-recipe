@@ -1,8 +1,11 @@
 package com.recipt.recipe.domain.recipe.entity
 
+import com.recipt.core.enums.recipe.CategoryType
 import com.recipt.core.enums.recipe.OpenRange
+import com.recipt.recipe.application.recipe.dto.RecipeCreateCommand
 import com.recipt.recipe.domain.converter.OpenRangeConverter
 import com.recipt.recipe.domain.converter.Yn2BooleanConverter
+import com.recipt.recipe.domain.recipe.entity.RecipeCategory.Companion.NOTHING
 import com.recipt.recipe.domain.recipe.vo.Categories
 import com.recipt.recipe.domain.recipe.vo.Creator
 import java.time.LocalDateTime
@@ -62,4 +65,26 @@ data class Recipe(
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST], orphanRemoval = true)
     @JoinColumn(name = "recipe_no")
     val contents: List<RecipeContent> = emptyList()
-)
+) {
+
+    companion object {
+        fun create(command: RecipeCreateCommand, categories: List<RecipeCategory>) = Recipe(
+            title = command.title,
+            introduction = command.introduction,
+            thumbnailImageUrl = command.thumbnailImageUrl,
+            creator = Creator(
+                no = command.creatorNo,
+                name = command.creatorName
+            ),
+            createDateTime = LocalDateTime.now(),
+            categories = Categories(
+                mainIngredientCategory = categories.find { it.type == CategoryType.MAIN_INGREDIENT }?: NOTHING,
+                kindCategory =  categories.find { it.type == CategoryType.KIND }?: NOTHING
+            ),
+            difficulty = command.difficulty,
+            openRange = command.openRange,
+            subCookings = command.subCookings.map { SubCooking.create(it) },
+            contents = command.contents.map { RecipeContent.create(it) }
+        )
+    }
+}

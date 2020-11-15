@@ -1,5 +1,6 @@
 package com.recipt.recipe.domain.recipe.entity
 
+import com.recipt.recipe.application.recipe.dto.RecipeContentCreateCommand
 import javax.persistence.*
 
 @Entity
@@ -22,4 +23,14 @@ data class RecipeContent(
 
     @Column(name = "image_url")
     val imageUrl: String? = null
-)
+) {
+    companion object {
+        fun create(command: RecipeContentCreateCommand) = RecipeContent(
+            order = command.order,
+            content = command.content,
+            expectTime = command.expectTime,
+            necessary = command.necessary,
+            imageUrl = command.imageUrl
+        )
+    }
+}

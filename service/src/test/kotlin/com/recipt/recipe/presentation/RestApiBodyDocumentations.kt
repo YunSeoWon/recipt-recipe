@@ -6,6 +6,7 @@ import com.recipt.recipe.domain.recipe.entity.RecipeCategory
 import com.recipt.recipe.domain.recipe.vo.Categories
 import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 import com.recipt.recipe.domain.recipe.vo.Creator
+import com.recipt.recipe.presentation.request.RecipeCreateRequest
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
@@ -139,4 +140,48 @@ fun Content.toDocument(prefix: String = "") = arrayOf(
         .description("필수 과정 여부"),
     fieldWithPath("${prefix}imageUrl").type(JsonFieldType.STRING)
         .description("이미지 url").optional()
+)
+
+fun RecipeCreateRequest.toDocument(prefix: String = "") = arrayOf(
+    fieldWithPath("${prefix}title").type(JsonFieldType.STRING)
+        .description("레시피 제목"),
+    fieldWithPath("${prefix}introduction").type(JsonFieldType.STRING)
+        .description("레시피 소개글"),
+    fieldWithPath("${prefix}thumbnailImageUrl").type(JsonFieldType.STRING)
+        .description("레시피 썸네일 url").optional(),
+    fieldWithPath("${prefix}mainIngredientCategoryNo").type(JsonFieldType.NUMBER)
+        .description("레시피 메인 재료 카테고리 번호"),
+    fieldWithPath("${prefix}kindCategoryNo").type(JsonFieldType.NUMBER)
+        .description("레시피 종류 카테고리 번호"),
+    fieldWithPath("${prefix}difficulty").type(JsonFieldType.NUMBER)
+        .description("레시피 난이도 (0~5)"),
+    fieldWithPath("${prefix}openRange").type(JsonFieldType.STRING)
+        .description("레시피 공개 범위"),
+    fieldWithPath("${prefix}subCookings").type(JsonFieldType.ARRAY)
+        .description("레시피 서브재료"),
+    *subCookings.first().toDocument("${prefix}subCookings[]."),
+    fieldWithPath("${prefix}contents").type(JsonFieldType.ARRAY)
+        .description("레시피 내용"),
+    *contents.first().toDocument("${prefix}contents[].")
+)
+
+fun SubCookingCreateCommand.toDocument(prefix: String = "") = arrayOf(
+    fieldWithPath("${prefix}name").type(JsonFieldType.STRING)
+        .description("레시피 서브재료 이름"),
+    fieldWithPath("${prefix}ingredients").type(JsonFieldType.ARRAY)
+        .description("레시피 서브재료들"),
+    *ingredients.first().toDocument("${prefix}.ingredients[].")
+)
+
+fun RecipeContentCreateCommand.toDocument(prefix: String = "") = arrayOf(
+    fieldWithPath("${prefix}order").type(JsonFieldType.NUMBER)
+        .description("레시피 내용 순서"),
+    fieldWithPath("${prefix}content").type(JsonFieldType.STRING)
+        .description("레시피 내용 본문"),
+    fieldWithPath("${prefix}expectTime").type(JsonFieldType.NUMBER)
+        .description("내용 당 걸리는 시간").optional(),
+    fieldWithPath("${prefix}necessary").type(JsonFieldType.BOOLEAN)
+        .description("필수 단계 여부"),
+    fieldWithPath("${prefix}imageUrl").type(JsonFieldType.STRING)
+        .description("레시피 내용 설명 이미지 url").optional()
 )

@@ -1,5 +1,6 @@
 package com.recipt.recipe.domain.recipe.entity
 
+import com.recipt.recipe.application.recipe.dto.SubCookingCreateCommand
 import com.recipt.recipe.domain.converter.CookingIngredientsConverter
 import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 import javax.persistence.*
@@ -19,4 +20,11 @@ data class SubCooking(
     @Convert(converter = CookingIngredientsConverter::class)
     @Column(name = "sub_cooking_ingredients")
     val cookingIngredients: List<CookingIngredient>
-)
+) {
+    companion object {
+        fun create(command: SubCookingCreateCommand) = SubCooking(
+            name = command.name,
+            cookingIngredients = command.ingredients
+        )
+    }
+}

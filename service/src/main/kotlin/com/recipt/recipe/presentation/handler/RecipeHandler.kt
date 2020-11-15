@@ -1,22 +1,24 @@
 package com.recipt.recipe.presentation.handler
 
 import com.recipt.core.enums.recipe.OpenRange
+import com.recipt.core.exception.request.RequestBodyExtractFailedException
+import com.recipt.recipe.application.recipe.RecipeCommandService
 import com.recipt.recipe.application.recipe.RecipeQueryService
 import com.recipt.recipe.application.recipe.dto.RecipeSearchQuery
+import com.recipt.recipe.presentation.memberInfoOrThrow
 import com.recipt.recipe.presentation.pathVariableToPositiveIntOrThrow
 import com.recipt.recipe.presentation.queryParamToListOrNull
 import com.recipt.recipe.presentation.queryParamToPositiveIntOrNull
-import com.recipt.recipe.presentation.queryParamToPositiveIntOrThrow
+import com.recipt.recipe.presentation.request.RecipeCreateRequest
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.*
+import org.springframework.web.reactive.function.server.ServerResponse.noContent
 import org.springframework.web.reactive.function.server.ServerResponse.ok
-import org.springframework.web.reactive.function.server.bodyValueAndAwait
-import org.springframework.web.reactive.function.server.queryParamOrNull
 
 @Component
 class RecipeHandler(
-    private val recipeQueryService: RecipeQueryService
+    private val recipeQueryService: RecipeQueryService,
+    private val recipeCommandService: RecipeCommandService
 ) {
 
     suspend fun search(request: ServerRequest): ServerResponse {
@@ -48,5 +50,16 @@ class RecipeHandler(
         val recipeNo = request.pathVariableToPositiveIntOrThrow("recipeNo")
 
         return ok().bodyValueAndAwait(recipeQueryService.get(recipeNo))
+    }
+
+    suspend fun create(request: ServerRequest): ServerResponse {
+        val createRequest = request.awaitBodyOrNull<RecipeCreateRequest>()
+            ?: throw RequestBodyExtractFailedException()
+
+        val memberInfo = request.memberInfoOrThrow()
+
+        recipeCommandService.create(createRequest.toCommand(memberInfo))
+
+        return noContent().buildAndAwait()
     }
 }
