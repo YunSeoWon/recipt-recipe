@@ -16,16 +16,18 @@ data class RecipeSummary(
     val likeCount: Int,
     val postingCount: Int
 ) {
-    constructor(recipe: Recipe): this(
-        no = recipe.no,
-        title = recipe.title,
-        thumbnailImageUrl = recipe.thumbnailImageUrl,
-        creator = recipe.creator,
-        createDateTime = recipe.createDateTime,
-        editDateTime = recipe.editDateTime,
-        difficulty = recipe.difficulty,
-        readCount = recipe.readCount,
-        likeCount = recipe.likeCount,
-        postingCount = recipe.postingCount
-    )
+    companion object {
+        fun of(recipe: Recipe) = RecipeSummary(
+            no = recipe.no,
+            title = recipe.title,
+            thumbnailImageUrl = recipe.thumbnailImageUrl,
+            creator = recipe.creator,
+            createDateTime = recipe.createDateTime,
+            editDateTime = recipe.editDateTime,
+            difficulty = recipe.difficulty,
+            readCount = recipe.readCount,
+            likeCount = recipe.likeCount,
+            postingCount = recipe.postingCount
+        )
+    }
 }

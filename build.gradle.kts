@@ -106,6 +106,7 @@ subprojects {
             testImplementation("org.springframework.boot:spring-boot-starter-test") {
                 exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
             }
+            testImplementation("com.h2database:h2:1.4.194")
             asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.3.RELEASE")
             testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient:2.0.3.RELEASE")
             testImplementation("com.ninja-squad:springmockk:1.1.0")

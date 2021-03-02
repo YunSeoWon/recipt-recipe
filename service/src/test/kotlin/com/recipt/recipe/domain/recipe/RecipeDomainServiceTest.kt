@@ -1,5 +1,7 @@
 package com.recipt.recipe.domain.recipe
 
+import com.recipt.core.enums.recipe.CategoryType
+import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.recipe.application.recipe.dto.RecipeCreateCommand
 import com.recipt.recipe.domain.recipe.entity.Recipe
 import com.recipt.recipe.domain.recipe.entity.RecipeCategory
@@ -11,6 +13,7 @@ import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.test.StepVerifier
 
 @ExtendWith(MockKExtension::class)
 internal class RecipeDomainServiceTest {
@@ -31,27 +34,41 @@ internal class RecipeDomainServiceTest {
     @Test
     fun `레시피 생성`() {
         val categoryNos = listOf(1,2)
-        val command = mockk<RecipeCreateCommand> {
-            every { mainIngredientCategoryNo } returns categoryNos[0]
-            every { kindCategoryNo } returns categoryNos[1]
-        }
+        val command = RecipeCreateCommand(
+            mainIngredientCategoryNo = categoryNos[0],
+            kindCategoryNo = categoryNos[1],
+            title = "제육볶음",
+            introduction = "제육볶음을 만들어봅시다",
+            thumbnailImageUrl = null,
+            creatorNo = 1,
+            creatorName = "백종원",
+            difficulty = 1,
+            openRange = OpenRange.PUBLIC,
+            subCookings = listOf(),
+            contents = listOf()
+        )
 
-        val categories = listOf(mockk<RecipeCategory>())
-        val recipe = mockk<Recipe>()
+        val categories = listOf(RecipeCategory(
+            no = 1,
+            title = "카테고리",
+            type = CategoryType.KIND,
+            imageUrl = null
+        ))
 
-        mockkStatic(Recipe::class)
+        val recipe = Recipe.create(command, categories)
 
-        every { Recipe.create(any(), categories) } returns recipe
+        every { recipeCategoryRepository.findAllById(command.categoryNos) } returns categories
+        every { recipeRepository.save(any<Recipe>()) } returns recipe
 
-        every { recipeCategoryRepository.findAllById(categoryNos) } returns categories
-        every { recipeRepository.save(recipe) } returns recipe
+        val result = recipeDomainService.create(command)
 
-        recipeDomainService.create(command)
+        StepVerifier.create(result)
+            .expectNext(Unit)
+            .verifyComplete()
 
         verify {
-            Recipe.create(any(), categories)
-            recipeCategoryRepository.findAllById(categoryNos)
-            recipeRepository.save(recipe)
+            recipeCategoryRepository.findAllById(command.categoryNos)
+            recipeRepository.save(any<Recipe>())
         }
     }
 }

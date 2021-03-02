@@ -24,32 +24,37 @@ data class RecipeDetail(
     val subCookings: List<Cooking>,
     val contents: List<Content>
 ) {
-    constructor(recipe: Recipe): this(
-        no = recipe.no,
-        title = recipe.title,
-        introduction = recipe.introduction,
-        thumbnailImageUrl = recipe.thumbnailImageUrl,
-        creator = recipe.creator,
-        createDateTime = recipe.createDateTime,
-        editDateTime = recipe.editDateTime,
-        categories = recipe.categories,
-        difficulty = recipe.difficulty,
-        readCount = recipe.readCount,
-        likeCount = recipe.likeCount,
-        postingCount = recipe.postingCount,
-        subCookings = recipe.subCookings.map { Cooking(it) },
-        contents = recipe.contents.map { Content(it) }
-    )
+
+    companion object {
+        fun of(recipe: Recipe) = RecipeDetail(
+            no = recipe.no,
+            title = recipe.title,
+            introduction = recipe.introduction,
+            thumbnailImageUrl = recipe.thumbnailImageUrl,
+            creator = recipe.creator,
+            createDateTime = recipe.createDateTime,
+            editDateTime = recipe.editDateTime,
+            categories = recipe.categories,
+            difficulty = recipe.difficulty,
+            readCount = recipe.readCount,
+            likeCount = recipe.likeCount,
+            postingCount = recipe.postingCount,
+            subCookings = recipe.subCookings.map { Cooking.of(it) },
+            contents = recipe.contents.map { Content.of(it) }
+        )
+    }
 }
 
 data class Cooking(
     val name: String,
     val ingredients: List<CookingIngredient>
 ) {
-    constructor(cooking: SubCooking): this(
-        name = cooking.name,
-        ingredients = cooking.cookingIngredients
-    )
+    companion object {
+        fun of(cooking: SubCooking) = Cooking(
+            name = cooking.name,
+            ingredients = cooking.cookingIngredients
+        )
+    }
 }
 
 data class Content (
@@ -59,11 +64,13 @@ data class Content (
     val necessary: Boolean,
     val imageUrl: String?
 ) {
-    constructor(content: RecipeContent): this(
-        order = content.order,
-        content = content.content,
-        expectTime = content.expectTime,
-        necessary = content.necessary,
-        imageUrl = content.imageUrl
-    )
+    companion object {
+        fun of(content: RecipeContent) = Content(
+            order = content.order,
+            content = content.content,
+            expectTime = content.expectTime,
+            necessary = content.necessary,
+            imageUrl = content.imageUrl
+        )
+    }
 }

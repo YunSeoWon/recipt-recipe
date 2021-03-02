@@ -5,11 +5,12 @@ import com.recipt.recipe.application.recipe.dto.RecipeSearchQuery
 import com.recipt.recipe.domain.recipe.repository.RecipeRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 
 @Sql("classpath:sql/recipe-test.sql")
 internal class RecipeRepositoryImplTest(
-    private val recipeRepository: RecipeRepository
+    @Autowired private val recipeRepository: RecipeRepository
 ): ReciptJpaTest() {
 
     @Test

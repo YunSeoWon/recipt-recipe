@@ -22,6 +22,7 @@ import com.recipt.recipe.presentation.handler.RecipeHandler
 import com.recipt.recipe.presentation.request.RecipeCreateRequest
 import com.recipt.recipe.presentation.toDocument
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.just
 import io.mockk.runs
 import org.junit.jupiter.api.BeforeEach
@@ -40,6 +41,7 @@ import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.reactive.server.WebTestClient
+import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
 @WebFluxTest
@@ -96,7 +98,7 @@ internal class RecipeRouterTest {
             listOf(summary)
         )
 
-        coEvery { recipeQueryService.search(query) } returns recipes
+        every { recipeQueryService.search(query) } returns Mono.just(recipes)
 
         webTestClient.get()
             .uri("/recipes?writer=${query.writer!!}&mainCategoryNo=${query.mainCategoryNo!!}&kindCategoryNo=${query.kindCategoryNo!!}&page=${query.page.page}&pageSize=${query.page.sizePerPage}&ranges=${query.ranges.joinToString(",")}")
@@ -152,9 +154,9 @@ internal class RecipeRouterTest {
                 RecipeContent(no = 1, order = 1, content = "먼저 양념을 만들기 위해 간장과 고추장을 섞습니다.", expectTime = 20),
                 RecipeContent(no = 2, order = 2, content = "그 다음, 양파를 썰어놓습니다.", expectTime = 20)
             )
-        ).let { RecipeDetail(it) }
+        ).let { RecipeDetail.of(it) }
 
-        coEvery { recipeQueryService.get(recipeNo) } returns response
+        every { recipeQueryService.get(recipeNo) } returns Mono.just(response)
 
         webTestClient.get()
             .uri("/recipes/{recipeNo}", recipeNo)
@@ -207,7 +209,7 @@ internal class RecipeRouterTest {
             )
         )
 
-        coEvery { recipeCommandService.create(any()) } just runs
+        every { recipeCommandService.create(any()) } returns Mono.just(Unit)
 
         webTestClient.post()
             .uri("/recipes")

@@ -14,6 +14,8 @@ import org.mockito.Mock
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
+import reactor.core.publisher.Mono
+import reactor.test.StepVerifier
 import java.util.function.Consumer
 
 @ExtendWith(MockKExtension::class)
@@ -22,27 +24,28 @@ internal class RecipeCommandServiceTest {
     @MockK
     private lateinit var recipeDomainService: RecipeDomainService
 
-    @MockK
-    private lateinit var transactionTemplate: TransactionTemplate
-
     private lateinit var recipeCommandService: RecipeCommandService
 
     @BeforeEach
     fun setUp() {
-        recipeCommandService = RecipeCommandService(recipeDomainService, transactionTemplate)
+        recipeCommandService = RecipeCommandService(recipeDomainService)
 
-        every { transactionTemplate.execute(any<TransactionCallback<*>>()) } answers {
-            firstArg<TransactionCallback<*>>().doInTransaction(mockk())
-        }
+//        every { transactionTemplate.execute(any<TransactionCallback<*>>()) } answers {
+//            firstArg<TransactionCallback<*>>().doInTransaction(mockk())
+//        }
     }
 
     @Test
     fun `레시피 생성`() {
         val command = mockk<RecipeCreateCommand>()
 
-        every { recipeDomainService.create(command) } just runs
+        every { recipeDomainService.create(command) } returns Mono.just(Unit)
 
-        runBlocking { recipeCommandService.create(command) }
+        val result = recipeCommandService.create(command)
+
+        StepVerifier.create(result)
+            .expectNext(Unit)
+            .verifyComplete()
 
         verify { recipeDomainService.create(command) }
     }

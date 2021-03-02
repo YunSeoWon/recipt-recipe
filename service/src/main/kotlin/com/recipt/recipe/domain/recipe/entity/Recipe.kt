@@ -8,6 +8,7 @@ import com.recipt.recipe.domain.converter.Yn2BooleanConverter
 import com.recipt.recipe.domain.recipe.entity.RecipeCategory.Companion.NOTHING
 import com.recipt.recipe.domain.recipe.vo.Categories
 import com.recipt.recipe.domain.recipe.vo.Creator
+import net.bytebuddy.implementation.bind.annotation.Default
 import java.time.LocalDateTime
 import javax.persistence.*
 

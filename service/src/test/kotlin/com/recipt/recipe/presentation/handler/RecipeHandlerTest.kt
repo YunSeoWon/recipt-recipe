@@ -55,7 +55,7 @@ internal class RecipeHandlerTest {
             .queryParam("ranges", query.ranges.joinToString(","))
             .build()
 
-        coEvery { recipeQueryService.search(query) } returns mockk()
+        every { recipeQueryService.search(query) } returns mockk()
 
         val result = runBlocking { recipeHandler.search(request) }
 
@@ -118,7 +118,7 @@ internal class RecipeHandlerTest {
             .attribute(MEMBER_INFO, memberInfo)
             .body(Mono.just(createRequest))
 
-        coEvery { recipeCommandService.create(createRequest.toCommand(memberInfo)) } just runs
+        every { recipeCommandService.create(createRequest.toCommand(memberInfo)) } returns Mono.just(Unit)
 
         val result = runBlocking { recipeHandler.create(request) }
 

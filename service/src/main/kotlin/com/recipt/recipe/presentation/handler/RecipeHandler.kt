@@ -10,6 +10,7 @@ import com.recipt.recipe.presentation.pathVariableToPositiveIntOrThrow
 import com.recipt.recipe.presentation.queryParamToListOrNull
 import com.recipt.recipe.presentation.queryParamToPositiveIntOrNull
 import com.recipt.recipe.presentation.request.RecipeCreateRequest
+import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.noContent
@@ -43,13 +44,15 @@ class RecipeHandler(
             ranges = ranges
         )
 
-        return ok().bodyValueAndAwait(recipeQueryService.search(query))
+        return recipeQueryService.search(query)
+            .let { ok().body(it).awaitSingle()}
     }
 
     suspend fun get(request: ServerRequest): ServerResponse {
         val recipeNo = request.pathVariableToPositiveIntOrThrow("recipeNo")
 
-        return ok().bodyValueAndAwait(recipeQueryService.get(recipeNo))
+        return recipeQueryService.get(recipeNo)
+            .let { ok().body(it).awaitSingle() }
     }
 
     suspend fun create(request: ServerRequest): ServerResponse {
@@ -59,6 +62,7 @@ class RecipeHandler(
         val memberInfo = request.memberInfoOrThrow()
 
         recipeCommandService.create(createRequest.toCommand(memberInfo))
+            .awaitSingle()
 
         return noContent().buildAndAwait()
     }

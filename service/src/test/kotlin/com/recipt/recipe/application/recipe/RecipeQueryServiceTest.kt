@@ -2,7 +2,9 @@ package com.recipt.recipe.application.recipe
 
 import com.recipt.core.enums.recipe.CategoryType
 import com.recipt.core.enums.recipe.OpenRange
+import com.recipt.core.exception.recipe.RecipeNotFoundException
 import com.recipt.core.model.PageInfo
+import com.recipt.core.model.map
 import com.recipt.recipe.application.recipe.dto.Cooking
 import com.recipt.recipe.application.recipe.dto.RecipeDetail
 import com.recipt.recipe.application.recipe.dto.RecipeSearchQuery
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import reactor.test.StepVerifier
 import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
@@ -62,6 +65,8 @@ internal class RecipeQueryServiceTest {
             listOf(recipe)
         )
 
+        val expect = recipes.map { RecipeSummary.of(it) }
+
         val query = RecipeSearchQuery(
             writer = "작성자",
             mainCategoryNo = null,
@@ -73,9 +78,11 @@ internal class RecipeQueryServiceTest {
 
         every { recipeRepository.search(query) } returns recipes
 
-        val result = runBlocking { recipeQueryService.search(query) }
+        val result = recipeQueryService.search(query)
 
-        assertEquals(PageInfo(10, listOf(RecipeSummary(recipe))), result)
+        StepVerifier.create(result)
+            .expectNext(expect)
+            .verifyComplete()
     }
 
     @Test
@@ -111,14 +118,21 @@ internal class RecipeQueryServiceTest {
                 RecipeContent(no = 2, order = 2, content = "그 다음, 양파를 썰어놓습니다.", expectTime = 20)
             )
         )
-        val expected = RecipeDetail(recipe)
+        val expected = RecipeDetail.of(recipe)
 
         every { recipeRepository.findByNoAndDeletedIsFalse(recipeNo) } returns recipe
+        every { recipeRepository.findByNoAndDeletedIsFalse(not(recipeNo)) } returns null
 
-        val result = runBlocking { recipeQueryService.get(recipeNo) }
+        val result = recipeQueryService.get(recipeNo)
 
-        assertEquals(result, expected)
+        StepVerifier.create(result)
+            .expectNext(expected)
+            .verifyComplete()
 
-        verify { recipeRepository.findByNoAndDeletedIsFalse(recipeNo) }
+        val errorResult = recipeQueryService.get(recipeNo + 1)
+
+        StepVerifier.create(errorResult)
+            .expectError(RecipeNotFoundException::class.java)
+            .verify()
     }
 }
