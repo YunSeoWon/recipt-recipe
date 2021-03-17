@@ -24,9 +24,11 @@ class RecipeQueryService(
             }.subscribeOn(Schedulers.elastic())
     }
 
+    @Transactional
     fun get(recipeNo: Int): Mono<RecipeDetail> {
         return Mono.fromCallable {
             recipeRepository.findByNoAndDeletedIsFalse(recipeNo)
+                ?.also { it.read() }
                 ?: throw RecipeNotFoundException()
         }
             .map { RecipeDetail.of(it) }

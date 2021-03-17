@@ -1,32 +1,20 @@
 package com.recipt.recipe.application.recipe
 
-import com.recipt.core.enums.recipe.CategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.exception.recipe.RecipeNotFoundException
 import com.recipt.core.model.PageInfo
 import com.recipt.core.model.map
 import com.recipt.recipe.application.recipe.dto.*
 import com.recipt.recipe.domain.recipe.RecipeTestData
-import com.recipt.recipe.domain.recipe.entity.Recipe
-import com.recipt.recipe.domain.recipe.entity.RecipeCategory
-import com.recipt.recipe.domain.recipe.entity.RecipeContent
-import com.recipt.recipe.domain.recipe.entity.SubCooking
 import com.recipt.recipe.domain.recipe.repository.RecipeRepository
-import com.recipt.recipe.domain.recipe.vo.Categories
-import com.recipt.recipe.domain.recipe.vo.CookingIngredient
-import com.recipt.recipe.domain.recipe.vo.Creator
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.verify
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import reactor.test.StepVerifier
-import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
 internal class RecipeQueryServiceTest {
@@ -71,19 +59,26 @@ internal class RecipeQueryServiceTest {
     @Test
     fun `레시피 조회`() {
         val recipeNo = 1
-        val recipe = RecipeTestData.TEST_RECIPE
+        val recipe = RecipeTestData.TEST_RECIPE.copy()
         val expected = RecipeDetail.of(recipe)
+            .copy(readCount = recipe.readCount + 1)
 
         every { recipeRepository.findByNoAndDeletedIsFalse(recipeNo) } returns recipe
-        every { recipeRepository.findByNoAndDeletedIsFalse(not(recipeNo)) } returns null
 
         val result = recipeQueryService.get(recipeNo)
 
         StepVerifier.create(result)
             .expectNext(expected)
             .verifyComplete()
+    }
 
-        val errorResult = recipeQueryService.get(recipeNo + 1)
+    @Test
+    fun `레시피 조회 (레시피가 없는 경우)`() {
+        val recipeNo = 1
+
+        every { recipeRepository.findByNoAndDeletedIsFalse(recipeNo) } returns null
+
+        val errorResult = recipeQueryService.get(recipeNo)
 
         StepVerifier.create(errorResult)
             .expectError(RecipeNotFoundException::class.java)

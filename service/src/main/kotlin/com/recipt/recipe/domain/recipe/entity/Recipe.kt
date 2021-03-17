@@ -28,9 +28,6 @@ data class Recipe(
     @Column(name = "create_datetime")
     val createDateTime: LocalDateTime = LocalDateTime.now(),
 
-    @Column(name = "read_count")
-    val readCount: Int = 0,
-
     @Column(name = "like_count")
     val likeCount: Int = 0,
 
@@ -71,6 +68,10 @@ data class Recipe(
     var difficulty: Int = 0
         private set
 
+    @Column(name = "read_count")
+    var readCount: Int = 0
+        private set
+
     @Convert(converter = OpenRangeConverter::class)
     @Column(name = "open_range")
     var openRange: OpenRange = OpenRange.PUBLIC
@@ -109,5 +110,9 @@ data class Recipe(
         this.difficulty = command.difficulty
         this.openRange = command.openRange
         this.editDateTime = LocalDateTime.now()
+    }
+
+    fun read() {
+        this.readCount++
     }
 }
