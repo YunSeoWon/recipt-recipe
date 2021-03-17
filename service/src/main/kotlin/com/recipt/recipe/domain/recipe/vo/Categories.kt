@@ -17,4 +17,11 @@ data class Categories(
     @ManyToOne(targetEntity = RecipeCategory::class, fetch = FetchType.EAGER)
     @JoinColumn(name = "kind_category_no")
     val kindCategory: RecipeCategory
-)
+) {
+    companion object {
+        val NOTHING: Categories = Categories(
+            mainIngredientCategory = RecipeCategory.NOTHING,
+            kindCategory = RecipeCategory.NOTHING
+        )
+    }
+}

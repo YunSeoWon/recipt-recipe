@@ -8,6 +8,7 @@ import com.recipt.recipe.application.recipe.RecipeQueryService
 import com.recipt.recipe.application.recipe.dto.*
 import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 import com.recipt.recipe.presentation.request.RecipeCreateRequest
+import com.recipt.recipe.presentation.request.RecipeModifyRequest
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -124,5 +125,33 @@ internal class RecipeHandlerTest {
 
         assertEquals(HttpStatus.NO_CONTENT, result.statusCode())
         coVerify { recipeCommandService.create(createRequest.toCommand(memberInfo)) }
+    }
+
+    @Test
+    fun `레시피 변경`() {
+        val modifyRequest = RecipeModifyRequest(
+            title = "변경할 제목",
+            introduction = "변경할거여",
+            thumbnailImageUrl = null,
+            mainIngredientCategoryNo = 2,
+            kindCategoryNo = 3,
+            difficulty = 1,
+            openRange = OpenRange.PUBLIC
+        )
+
+        val memberInfo = MemberInfo.TEST_MEMBER_INFO
+        val recipeNo = 1
+
+        val request = MockServerRequest.builder()
+            .attribute(MEMBER_INFO, memberInfo)
+            .pathVariable("recipeNo", recipeNo.toString())
+            .body(Mono.just(modifyRequest))
+
+        every { recipeCommandService.modify(modifyRequest.toCommand(recipeNo, memberInfo)) } returns Mono.just(Unit)
+
+        val result = runBlocking { recipeHandler.modify(request) }
+
+        assertEquals(HttpStatus.NO_CONTENT, result.statusCode())
+        coVerify {  recipeCommandService.modify(modifyRequest.toCommand(recipeNo, memberInfo)) }
     }
 }

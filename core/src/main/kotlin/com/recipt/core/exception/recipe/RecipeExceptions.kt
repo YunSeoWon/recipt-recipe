@@ -7,3 +7,5 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
 class RecipeNotFoundException: ReciptException(RecipeErrorCode.NOT_FOUND)
 
+@ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+class UnAuthorizedRecipeException: ReciptException(RecipeErrorCode.UNAUTHORIZED)

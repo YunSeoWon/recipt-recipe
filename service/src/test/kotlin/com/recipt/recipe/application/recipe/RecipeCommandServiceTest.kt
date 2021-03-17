@@ -1,6 +1,7 @@
 package com.recipt.recipe.application.recipe
 
 import com.recipt.recipe.application.recipe.dto.RecipeCreateCommand
+import com.recipt.recipe.application.recipe.dto.RecipeModifyCommand
 import com.recipt.recipe.domain.recipe.RecipeDomainService
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
@@ -48,5 +49,20 @@ internal class RecipeCommandServiceTest {
             .verifyComplete()
 
         verify { recipeDomainService.create(command) }
+    }
+
+    @Test
+    fun `레시피 변경`() {
+        val command = mockk<RecipeModifyCommand>()
+
+        every { recipeDomainService.modify(command) } returns Mono.just(Unit)
+
+        val result = recipeCommandService.modify(command)
+
+        StepVerifier.create(result)
+            .expectNext(Unit)
+            .verifyComplete()
+
+        verify { recipeDomainService.modify(command) }
     }
 }

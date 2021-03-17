@@ -24,7 +24,10 @@ class RecipeRouter(
                 accept(MediaType.APPLICATION_JSON).nest {
                     GET("", recipeHandler::search)
                     POST("", recipeHandler::create)
-                    GET("/{recipeNo}", recipeHandler::get)
+                    "/{recipeNo}".nest {
+                        GET("", recipeHandler::get)
+                        PUT("", recipeHandler::modify)
+                    }
                 }
             }
         }

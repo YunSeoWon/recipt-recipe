@@ -3,6 +3,7 @@ package com.recipt.recipe.domain.recipe.entity
 import com.recipt.core.enums.recipe.CategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.recipe.application.recipe.dto.RecipeCreateCommand
+import com.recipt.recipe.application.recipe.dto.RecipeModifyCommand
 import com.recipt.recipe.domain.converter.OpenRangeConverter
 import com.recipt.recipe.domain.converter.Yn2BooleanConverter
 import com.recipt.recipe.domain.recipe.entity.RecipeCategory.Companion.NOTHING
@@ -21,26 +22,11 @@ data class Recipe(
     @Column(name = "recipe_no")
     val no: Int = 0,
 
-    val title: String,
-
-    val introduction: String?,
-
-    @Column(name = "thumbnail_image_url")
-    val thumbnailImageUrl: String? = null,
-
     @Embedded
     val creator: Creator,
 
     @Column(name = "create_datetime")
     val createDateTime: LocalDateTime = LocalDateTime.now(),
-
-    @Column(name = "edit_datetime")
-    val editDateTime: LocalDateTime? = null,
-
-    @Embedded
-    val categories: Categories,
-
-    val difficulty: Int = 0,
 
     @Column(name = "read_count")
     val readCount: Int = 0,
@@ -50,10 +36,6 @@ data class Recipe(
 
     @Column(name = "posting_count")
     val postingCount: Int = 0,
-
-    @Convert(converter = OpenRangeConverter::class)
-    @Column(name = "open_range")
-    val openRange: OpenRange = OpenRange.PUBLIC,
 
     @Convert(converter = Yn2BooleanConverter::class)
     @Column(name = "delete_yn")
@@ -68,24 +50,64 @@ data class Recipe(
     val contents: List<RecipeContent> = emptyList()
 ) {
 
+    var title: String = ""
+        private set
+
+    var introduction: String? = null
+        private set
+
+    @Column(name = "thumbnail_image_url")
+    var thumbnailImageUrl: String? = null
+        private set
+
+    @Column(name = "edit_datetime")
+    var editDateTime: LocalDateTime? = null
+        private set
+
+    @Embedded
+    var categories: Categories = Categories.NOTHING
+        private set
+
+    var difficulty: Int = 0
+        private set
+
+    @Convert(converter = OpenRangeConverter::class)
+    @Column(name = "open_range")
+    var openRange: OpenRange = OpenRange.PUBLIC
+        private set
+
     companion object {
         fun create(command: RecipeCreateCommand, categories: List<RecipeCategory>) = Recipe(
-            title = command.title,
-            introduction = command.introduction,
-            thumbnailImageUrl = command.thumbnailImageUrl,
             creator = Creator(
                 no = command.creatorNo,
                 name = command.creatorName
             ),
             createDateTime = LocalDateTime.now(),
-            categories = Categories(
-                mainIngredientCategory = categories.find { it.type == CategoryType.MAIN_INGREDIENT }?: NOTHING,
-                kindCategory =  categories.find { it.type == CategoryType.KIND }?: NOTHING
-            ),
-            difficulty = command.difficulty,
-            openRange = command.openRange,
             subCookings = command.subCookings.map { SubCooking.create(it) },
             contents = command.contents.map { RecipeContent.create(it) }
+        ).apply {
+            this.title = command.title
+            this.introduction = command.introduction
+            this.thumbnailImageUrl = command.thumbnailImageUrl
+            this.categories = Categories(
+                mainIngredientCategory = categories.find { it.type == CategoryType.MAIN_INGREDIENT }?: NOTHING,
+                kindCategory =  categories.find { it.type == CategoryType.KIND }?: NOTHING
+            )
+            this.difficulty = command.difficulty
+            this.openRange = command.openRange
+        }
+    }
+
+    fun modify(command: RecipeModifyCommand, categories: List<RecipeCategory>) {
+        this.title = command.title
+        this.introduction = command.introduction
+        this.thumbnailImageUrl = command.thumbnailImageUrl
+        this.categories = Categories(
+            mainIngredientCategory = categories.find { it.type == CategoryType.MAIN_INGREDIENT }?: NOTHING,
+            kindCategory =  categories.find { it.type == CategoryType.KIND }?: NOTHING
         )
+        this.difficulty = command.difficulty
+        this.openRange = command.openRange
+        this.editDateTime = LocalDateTime.now()
     }
 }

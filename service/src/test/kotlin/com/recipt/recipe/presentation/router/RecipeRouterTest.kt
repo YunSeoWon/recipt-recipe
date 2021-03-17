@@ -10,6 +10,7 @@ import com.recipt.member.presentation.exception.GlobalErrorWebExceptionHandler
 import com.recipt.recipe.application.recipe.RecipeCommandService
 import com.recipt.recipe.application.recipe.RecipeQueryService
 import com.recipt.recipe.application.recipe.dto.*
+import com.recipt.recipe.domain.recipe.RecipeTestData
 import com.recipt.recipe.domain.recipe.entity.Recipe
 import com.recipt.recipe.domain.recipe.entity.RecipeCategory
 import com.recipt.recipe.domain.recipe.entity.RecipeContent
@@ -20,6 +21,7 @@ import com.recipt.recipe.domain.recipe.vo.Creator
 import com.recipt.recipe.presentation.filter.AccessTokenFilter
 import com.recipt.recipe.presentation.handler.RecipeHandler
 import com.recipt.recipe.presentation.request.RecipeCreateRequest
+import com.recipt.recipe.presentation.request.RecipeModifyRequest
 import com.recipt.recipe.presentation.toDocument
 import io.mockk.coEvery
 import io.mockk.every
@@ -125,36 +127,8 @@ internal class RecipeRouterTest {
     @Test
     fun `레시피 상세 조회`() {
         val recipeNo = 1
-        val response = Recipe(
-            no = recipeNo,
-            title = "title",
-            introduction = null,
-            creator = Creator(1, "작성자"),
-            createDateTime = LocalDateTime.now(),
-            editDateTime = null,
-            difficulty = 1,
-            readCount = 1,
-            likeCount = 1,
-            postingCount = 1,
-            categories = Categories(
-                mainIngredientCategory = RecipeCategory(no = 1, title =  "주재료", type = CategoryType.MAIN_INGREDIENT),
-                kindCategory = RecipeCategory(no = 2, title = "종류", type = CategoryType.KIND)
-            ),
-            subCookings = listOf(
-                SubCooking(no = 1, name = "양념", cookingIngredients = listOf(
-                    CookingIngredient(name = "간장", amount = 1.0, unit = "큰술"),
-                    CookingIngredient(name = "고추장", amount = 2.0, unit = "큰술")
-                )),
-                SubCooking(no = 1, name = "주재료", cookingIngredients = listOf(
-                    CookingIngredient(name = "대패삼겹살", amount = 200.0, unit = "g"),
-                    CookingIngredient(name = "양파", amount = 0.5, unit = "개")
-                ))
-            ),
-            contents = listOf(
-                RecipeContent(no = 1, order = 1, content = "먼저 양념을 만들기 위해 간장과 고추장을 섞습니다.", expectTime = 20),
-                RecipeContent(no = 2, order = 2, content = "그 다음, 양파를 썰어놓습니다.", expectTime = 20)
-            )
-        ).let { RecipeDetail.of(it) }
+        val response = RecipeTestData.TEST_RECIPE
+            .let { RecipeDetail.of(it) }
 
         every { recipeQueryService.get(recipeNo) } returns Mono.just(response)
 
@@ -223,6 +197,38 @@ internal class RecipeRouterTest {
                     "create-recipe",
                     requestFields(
                         *createRequest.toDocument()
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `레시피 변경`() {
+        val modifyRequest = RecipeModifyRequest(
+            title = "변경할 제목",
+            introduction = "변경할거여",
+            thumbnailImageUrl = null,
+            mainIngredientCategoryNo = 2,
+            kindCategoryNo = 3,
+            difficulty = 1,
+            openRange = OpenRange.PUBLIC
+        )
+        val recipeNo = 1
+
+        every { recipeCommandService.modify(any()) } returns Mono.just(Unit)
+
+        webTestClient.put()
+            .uri("/recipes/{recipeNo}", recipeNo.toString())
+            .header(ReciptHeaders.AUTH_TOKEN, ReciptHeaders.TEST_AUTH_TOKEN)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(modifyRequest)
+            .exchange()
+            .expectStatus().isNoContent
+            .expectBody().consumeWith(
+                WebTestClientRestDocumentation.document(
+                    "modify-recipe",
+                    requestFields(
+                        *modifyRequest.toDocument()
                     )
                 )
             )
