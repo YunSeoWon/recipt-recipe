@@ -23,6 +23,7 @@ var docDir = file("src/main/resources/static/docs")
 ext["spring-security.version"] = "5.3.4.RELEASE"
 ext["spring.version"] = "5.2.8.RELEASE"
 val queryDslversion = "4.2.+"
+val blockHoundVersion = "1.0.4.RELEASE"
 
 buildscript {
     repositories {
@@ -57,10 +58,13 @@ subprojects {
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug")
 
         // test
         testImplementation("io.projectreactor:reactor-test")
         testImplementation("io.mockk:mockk:1.9.3")
+        //testImplementation("io.projectreactor.tools:blockhound:$blockHoundVersion")
+
     }
 
     tasks {
