@@ -1,5 +1,7 @@
 package com.recipt.recipe.presentation.handler
 
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.http.ReciptAttributes.MEMBER_INFO
 import com.recipt.core.model.MemberInfo
@@ -40,8 +42,8 @@ internal class RecipeHandlerTest {
     fun `레시피 검색`() {
         val query = RecipeSearchQuery(
             writer = "작성자",
-            mainCategoryNo = 1,
-            kindCategoryNo = 2,
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER,
             pageSize = 10,
             page = 1,
             ranges = setOf(OpenRange.PUBLIC)
@@ -49,8 +51,8 @@ internal class RecipeHandlerTest {
 
         val request = MockServerRequest.builder()
             .queryParam("writer", query.writer!!)
-            .queryParam("mainCategoryNo", query.mainCategoryNo!!.toString())
-            .queryParam("kindCategoryNo", query.kindCategoryNo!!.toString())
+            .queryParam("mainCategoryType", query.mainCategoryType!!.name)
+            .queryParam("kindCategoryType", query.kindCategoryType!!.name)
             .queryParam("page", query.page.page.toString())
             .queryParam("pageSize", query.page.sizePerPage.toString())
             .queryParam("ranges", query.ranges.joinToString(","))
@@ -90,6 +92,8 @@ internal class RecipeHandlerTest {
             kindCategoryNo = 1,
             difficulty = 1,
             openRange = OpenRange.PUBLIC,
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER,
             subCookings = listOf(
                 SubCookingCreateCommand(
                     name = "주재료",
@@ -136,7 +140,9 @@ internal class RecipeHandlerTest {
             mainIngredientCategoryNo = 2,
             kindCategoryNo = 3,
             difficulty = 1,
-            openRange = OpenRange.PUBLIC
+            openRange = OpenRange.PUBLIC,
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER
         )
 
         val memberInfo = MemberInfo.TEST_MEMBER_INFO

@@ -1,10 +1,5 @@
-insert into RECIPE_CATEGORY(recipe_category_no, title, category_type, category_image_url) values
-(1, '돼지고기', 1, null),
-(2, '쌀', 1, null),
-(11, '면', 2, null),
-(12, '국물', 2, null);
 
-insert into RECIPE(recipe_no, title, introduction, creator_no, creator_name, main_ingredient_category_no, kind_category_no, open_range, delete_yn, difficulty, read_count, like_count, posting_count) values
+insert into RECIPE(recipe_no, title, introduction, creator_no, creator_name, main_category_type, kind_category_type, open_range, delete_yn, difficulty, read_count, like_count, posting_count) values
 (1, '제목1', null, 1, '작성자1', 1, 11, 1, 'N', 0, 0, 0, 0),
 (2, '제목2', null, 1, '작성자1', 1, 12, 1, 'N', 0, 0, 0, 0),
 (3, '제목3', null, 1, '작성자1', 1, 11, 1, 'N', 0, 0, 0, 0),

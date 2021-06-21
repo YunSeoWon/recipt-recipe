@@ -1,12 +1,12 @@
 package com.recipt.recipe.domain.recipe
 
-import com.recipt.core.enums.recipe.CategoryType
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.recipe.application.recipe.dto.RecipeContentCreateCommand
 import com.recipt.recipe.application.recipe.dto.RecipeCreateCommand
 import com.recipt.recipe.application.recipe.dto.SubCookingCreateCommand
 import com.recipt.recipe.domain.recipe.entity.Recipe
-import com.recipt.recipe.domain.recipe.entity.RecipeCategory
 import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 
 object RecipeTestData {
@@ -40,11 +40,9 @@ object RecipeTestData {
             contents = listOf(
                 RecipeContentCreateCommand(order = 1, content = "먼저 양념을 만들기 위해 간장과 고추장을 섞습니다.", expectTime = 20, necessary = true, imageUrl = null),
                 RecipeContentCreateCommand(order = 2, content = "그 다음, 양파를 썰어놓습니다.", expectTime = 20, necessary = true, imageUrl = null)
-            )
-        ),
-        listOf(
-            RecipeCategory(no = 1, title =  "주재료", type = CategoryType.MAIN_INGREDIENT),
-            RecipeCategory(no = 2, title = "종류", type = CategoryType.KIND)
+            ),
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER
         )
     )
 }

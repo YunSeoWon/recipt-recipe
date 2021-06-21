@@ -18,11 +18,11 @@ class RecipeRepositoryImpl: RecipeRepositoryCustom, AbstractReciptRepository(Rec
             searchQuery.writer?.let {
                 this.and(recipe.creator.name.eq(it))
             }
-            searchQuery.mainCategoryNo?.let {
-                this.and(recipe.categories.mainIngredientCategory.no.eq(it))
+            searchQuery.mainCategoryType?.let {
+                this.and(recipe.category.mainCategoryType.eq(it))
             }
-            searchQuery.kindCategoryNo?.let {
-                this.and(recipe.categories.kindCategory.no.eq(it))
+            searchQuery.kindCategoryType?.let {
+                this.and(recipe.category.kindCategoryType.eq(it))
             }
             this.and(recipe.deleted.isFalse)
             this.and(recipe.openRange.`in`(searchQuery.ranges))
@@ -45,7 +45,7 @@ class RecipeRepositoryImpl: RecipeRepositoryCustom, AbstractReciptRepository(Rec
         recipe.creator,
         recipe.createDateTime,
         recipe.editDateTime,
-        recipe.categories,
+        recipe.category,
         recipe.difficulty,
         recipe.readCount,
         recipe.likeCount,

@@ -1,5 +1,7 @@
 package com.recipt.recipe.application.recipe
 
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.exception.recipe.RecipeNotFoundException
 import com.recipt.core.model.PageInfo
@@ -10,7 +12,6 @@ import com.recipt.recipe.domain.recipe.repository.RecipeRepository
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -40,8 +41,8 @@ internal class RecipeQueryServiceTest {
 
         val query = RecipeSearchQuery(
             writer = "작성자",
-            mainCategoryNo = null,
-            kindCategoryNo = null,
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER,
             page = 1,
             pageSize = 1,
             ranges = setOf(OpenRange.PUBLIC)

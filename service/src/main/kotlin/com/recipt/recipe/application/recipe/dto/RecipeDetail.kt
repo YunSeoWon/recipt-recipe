@@ -1,11 +1,13 @@
 package com.recipt.recipe.application.recipe.dto
 
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.recipe.domain.recipe.entity.Recipe
 import com.recipt.recipe.domain.recipe.entity.RecipeContent
 import com.recipt.recipe.domain.recipe.entity.SubCooking
-import com.recipt.recipe.domain.recipe.vo.Categories
 import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 import com.recipt.recipe.domain.recipe.vo.Creator
+import com.recipt.recipe.domain.recipe.vo.RecipeCategory
 import java.time.LocalDateTime
 
 data class RecipeDetail(
@@ -16,7 +18,7 @@ data class RecipeDetail(
     val creator: Creator,
     val createDateTime: LocalDateTime,
     val editDateTime: LocalDateTime?,
-    val categories: Categories,
+    val category: Category,
     val difficulty: Int,
     val readCount: Int,
     val likeCount: Int,
@@ -34,8 +36,8 @@ data class RecipeDetail(
             creator = recipe.creator,
             createDateTime = recipe.createDateTime,
             editDateTime = recipe.editDateTime,
-            categories = recipe.categories,
-            difficulty = recipe.difficulty,
+            category = recipe.category.let { Category.of(it) },
+            difficulty =  recipe.difficulty,
             readCount = recipe.readCount,
             likeCount = recipe.likeCount,
             postingCount = recipe.postingCount,
@@ -71,6 +73,18 @@ data class Content (
             expectTime = content.expectTime,
             necessary = content.necessary,
             imageUrl = content.imageUrl
+        )
+    }
+}
+
+data class Category(
+    val mainCategoryType: MainCategoryType,
+    val kindCategoryType: KindCategoryType
+) {
+    companion object {
+        fun of(category: RecipeCategory) = Category(
+            mainCategoryType = category.mainCategoryType,
+            kindCategoryType = category.kindCategoryType
         )
     }
 }

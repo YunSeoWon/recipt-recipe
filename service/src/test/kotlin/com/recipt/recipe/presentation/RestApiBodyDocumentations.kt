@@ -1,9 +1,7 @@
 package com.recipt.recipe.presentation
 
-import com.recipt.core.model.PageInfo
 import com.recipt.recipe.application.recipe.dto.*
-import com.recipt.recipe.domain.recipe.entity.RecipeCategory
-import com.recipt.recipe.domain.recipe.vo.Categories
+import com.recipt.recipe.domain.recipe.vo.RecipeCategory
 import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 import com.recipt.recipe.domain.recipe.vo.Creator
 import com.recipt.recipe.presentation.request.RecipeCreateRequest
@@ -15,10 +13,10 @@ import org.springframework.restdocs.request.RequestDocumentation.parameterWithNa
 fun RecipeSearchQuery.toDocument() = arrayOf(
     parameterWithName("writer")
         .description("작성자").optional(),
-    parameterWithName("mainCategoryNo")
-        .description("메인재료 카테고리 번호").optional(),
-    parameterWithName("kindCategoryNo")
-        .description("요리종류 카테고리 번호").optional(),
+    parameterWithName("mainCategoryType")
+        .description("메인재료 카테고리 타입").optional(),
+    parameterWithName("kindCategoryType")
+        .description("요리종류 카테고리 타입").optional(),
     parameterWithName("page")
         .description("페이지 번호 (default = 1)").optional(),
     parameterWithName("pageSize")
@@ -82,9 +80,9 @@ fun RecipeDetail.toDocument(prefix: String = "") = arrayOf(
         .description("좋아요 수"),
     fieldWithPath("${prefix}postingCount").type(JsonFieldType.NUMBER)
         .description("포스팅 수"),
-    fieldWithPath("${prefix}categories").type(JsonFieldType.OBJECT)
+    fieldWithPath("${prefix}category").type(JsonFieldType.OBJECT)
         .description("레시피 카테고리 정보"),
-    *categories.toDocument("${prefix}categories."),
+    *category.toDocument("${prefix}category."),
     fieldWithPath("${prefix}subCookings").type(JsonFieldType.ARRAY)
         .description("서브 요리 정보"),
     *subCookings[0].toDocument("${prefix}subCookings[]."),
@@ -93,24 +91,11 @@ fun RecipeDetail.toDocument(prefix: String = "") = arrayOf(
     *contents[0].toDocument("${prefix}contents[].")
 )
 
-fun Categories.toDocument(prefix: String = "") = arrayOf(
-    fieldWithPath("${prefix}mainIngredientCategory").type(JsonFieldType.OBJECT)
-        .description("주 재료 카테고리 정보"),
-    *mainIngredientCategory.toDocument("${prefix}mainIngredientCategory."),
-    fieldWithPath("${prefix}kindCategory").type(JsonFieldType.OBJECT)
-        .description("요리 종류 카테고리 정보"),
-    *mainIngredientCategory.toDocument("${prefix}kindCategory.")
-)
-
-fun RecipeCategory.toDocument(prefix: String = "") = arrayOf(
-    fieldWithPath("${prefix}no").type(JsonFieldType.NUMBER)
-        .description("카테고리 번호"),
-    fieldWithPath("${prefix}title").type(JsonFieldType.STRING)
-        .description("카테고리 제목"),
-    fieldWithPath("${prefix}type").type(JsonFieldType.STRING)
-        .description("카테고리 타입"),
-    fieldWithPath("${prefix}imageUrl").type(JsonFieldType.STRING)
-        .description("카테고리 아이콘 이미지 url").optional()
+fun Category.toDocument(prefix: String = "") = arrayOf(
+    fieldWithPath("${prefix}mainCategoryType").type(JsonFieldType.STRING)
+        .description("주 재료 카테고리"),
+    fieldWithPath("${prefix}kindCategoryType").type(JsonFieldType.STRING)
+        .description("종류별 카테고리")
 )
 
 fun Cooking.toDocument(prefix: String = "") = arrayOf(
@@ -160,6 +145,10 @@ fun RecipeCreateRequest.toDocument(prefix: String = "") = arrayOf(
         .description("레시피 공개 범위"),
     fieldWithPath("${prefix}subCookings").type(JsonFieldType.ARRAY)
         .description("레시피 서브재료"),
+    fieldWithPath("${prefix}mainCategoryType").type(JsonFieldType.STRING)
+        .description("주재료 카테고리"),
+    fieldWithPath("${prefix}kindCategoryType").type(JsonFieldType.STRING)
+        .description("종류별 카테고리"),
     *subCookings.first().toDocument("${prefix}subCookings[]."),
     fieldWithPath("${prefix}contents").type(JsonFieldType.ARRAY)
         .description("레시피 내용"),
@@ -201,5 +190,9 @@ fun RecipeModifyRequest.toDocument(prefix: String = "") = arrayOf(
     fieldWithPath("${prefix}difficulty").type(JsonFieldType.NUMBER)
         .description("레시피 난이도 (0~5)"),
     fieldWithPath("${prefix}openRange").type(JsonFieldType.STRING)
-        .description("레시피 공개 범위")
+        .description("레시피 공개 범위"),
+    fieldWithPath("${prefix}mainCategoryType").type(JsonFieldType.STRING)
+        .description("주재료 카테고리"),
+    fieldWithPath("${prefix}kindCategoryType").type(JsonFieldType.STRING)
+        .description("종류별 카테고리")
 )

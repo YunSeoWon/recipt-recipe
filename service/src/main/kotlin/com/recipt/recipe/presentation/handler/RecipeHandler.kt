@@ -1,5 +1,7 @@
 package com.recipt.recipe.presentation.handler
 
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.exception.request.RequestBodyExtractFailedException
 import com.recipt.recipe.application.recipe.RecipeCommandService
@@ -13,7 +15,6 @@ import com.recipt.recipe.presentation.request.RecipeCreateRequest
 import com.recipt.recipe.presentation.request.RecipeModifyRequest
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.noContent
 import org.springframework.web.reactive.function.server.ServerResponse.ok
@@ -26,8 +27,10 @@ class RecipeHandler(
 
     suspend fun search(request: ServerRequest): ServerResponse {
         val writer = request.queryParamOrNull("writer")
-        val mainCategoryNo = request.queryParamToPositiveIntOrNull("mainCategoryNo")
-        val kindCategoryNo = request.queryParamToPositiveIntOrNull("kindCategoryNo")
+        val mainCategoryType = request.queryParamOrNull("mainCategoryType")
+            ?.let { MainCategoryType.valueOf(it) }
+        val kindCategoryType = request.queryParamOrNull("kindCategoryType")
+            ?.let { KindCategoryType.valueOf(it) }
         val pageSize = request.queryParamToPositiveIntOrNull("pageSize")
         val page = request.queryParamToPositiveIntOrNull("page")
         val ranges = request.queryParamToListOrNull("ranges")
@@ -39,8 +42,8 @@ class RecipeHandler(
 
         val query = RecipeSearchQuery(
             writer = writer,
-            mainCategoryNo = mainCategoryNo,
-            kindCategoryNo = kindCategoryNo,
+            mainCategoryType = mainCategoryType,
+            kindCategoryType = kindCategoryType,
             page = page,
             pageSize = pageSize,
             ranges = ranges

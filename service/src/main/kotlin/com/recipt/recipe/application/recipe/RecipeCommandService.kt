@@ -5,7 +5,6 @@ import com.recipt.recipe.application.recipe.dto.RecipeModifyCommand
 import com.recipt.recipe.domain.recipe.RecipeDomainService
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.support.TransactionTemplate
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 

@@ -1,7 +1,8 @@
 package com.recipt.recipe.application.recipe.dto
 
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.core.enums.recipe.OpenRange
-import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 
 data class RecipeModifyCommand(
     val recipeNo: Int,
@@ -12,6 +13,8 @@ data class RecipeModifyCommand(
     val kindCategoryNo: Int,
     val difficulty: Int,
     val openRange: OpenRange,
+    val mainCategoryType: MainCategoryType,
+    val kindCategoryType: KindCategoryType,
 
     val editorNo: Int
 ) {

@@ -1,5 +1,7 @@
 package com.recipt.recipe.presentation.request
 
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.model.MemberInfo
 import com.recipt.recipe.application.recipe.dto.RecipeContentCreateCommand
@@ -14,6 +16,8 @@ data class RecipeCreateRequest(
     val kindCategoryNo: Int,
     val difficulty: Int,
     val openRange: OpenRange,
+    val mainCategoryType: MainCategoryType,
+    val kindCategoryType: KindCategoryType,
 
     val subCookings: List<SubCookingCreateCommand>,
     val contents: List<RecipeContentCreateCommand>
@@ -29,6 +33,8 @@ data class RecipeCreateRequest(
         creatorNo = memberInfo.no,
         creatorName = memberInfo.nickname,
         subCookings = subCookings,
-        contents = contents
+        contents = contents,
+        mainCategoryType = mainCategoryType,
+        kindCategoryType = kindCategoryType
     )
 }

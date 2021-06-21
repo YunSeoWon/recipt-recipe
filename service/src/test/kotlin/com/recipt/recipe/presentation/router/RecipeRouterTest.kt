@@ -1,7 +1,8 @@
 package com.recipt.recipe.presentation.router
 
 import com.ninjasquad.springmockk.MockkBean
-import com.recipt.core.enums.recipe.CategoryType
+import com.recipt.core.enums.recipe.KindCategoryType
+import com.recipt.core.enums.recipe.MainCategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.core.http.ReciptHeaders
 import com.recipt.core.model.PageInfo
@@ -11,11 +12,6 @@ import com.recipt.recipe.application.recipe.RecipeCommandService
 import com.recipt.recipe.application.recipe.RecipeQueryService
 import com.recipt.recipe.application.recipe.dto.*
 import com.recipt.recipe.domain.recipe.RecipeTestData
-import com.recipt.recipe.domain.recipe.entity.Recipe
-import com.recipt.recipe.domain.recipe.entity.RecipeCategory
-import com.recipt.recipe.domain.recipe.entity.RecipeContent
-import com.recipt.recipe.domain.recipe.entity.SubCooking
-import com.recipt.recipe.domain.recipe.vo.Categories
 import com.recipt.recipe.domain.recipe.vo.CookingIngredient
 import com.recipt.recipe.domain.recipe.vo.Creator
 import com.recipt.recipe.presentation.filter.AccessTokenFilter
@@ -23,13 +19,9 @@ import com.recipt.recipe.presentation.handler.RecipeHandler
 import com.recipt.recipe.presentation.request.RecipeCreateRequest
 import com.recipt.recipe.presentation.request.RecipeModifyRequest
 import com.recipt.recipe.presentation.toDocument
-import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.just
-import io.mockk.runs
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.ApplicationContext
@@ -75,8 +67,8 @@ internal class RecipeRouterTest {
     fun `레시피 검색`() {
         val query = RecipeSearchQuery(
             writer = "작성자",
-            mainCategoryNo = 1,
-            kindCategoryNo = 2,
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER,
             page = 1,
             pageSize = 10,
             ranges = setOf(OpenRange.PUBLIC)
@@ -103,7 +95,7 @@ internal class RecipeRouterTest {
         every { recipeQueryService.search(query) } returns Mono.just(recipes)
 
         webTestClient.get()
-            .uri("/recipes?writer=${query.writer!!}&mainCategoryNo=${query.mainCategoryNo!!}&kindCategoryNo=${query.kindCategoryNo!!}&page=${query.page.page}&pageSize=${query.page.sizePerPage}&ranges=${query.ranges.joinToString(",")}")
+            .uri("/recipes?writer=${query.writer!!}&mainCategoryType=${query.mainCategoryType!!}&kindCategoryType=${query.kindCategoryType!!}&page=${query.page.page}&pageSize=${query.page.sizePerPage}&ranges=${query.ranges.joinToString(",")}")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isOk
@@ -160,6 +152,8 @@ internal class RecipeRouterTest {
             kindCategoryNo = 1,
             difficulty = 1,
             openRange = OpenRange.PUBLIC,
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER,
             subCookings = listOf(
                 SubCookingCreateCommand(
                     name = "주재료",
@@ -211,7 +205,9 @@ internal class RecipeRouterTest {
             mainIngredientCategoryNo = 2,
             kindCategoryNo = 3,
             difficulty = 1,
-            openRange = OpenRange.PUBLIC
+            openRange = OpenRange.PUBLIC,
+            mainCategoryType = MainCategoryType.OTHER,
+            kindCategoryType = KindCategoryType.OTHER
         )
         val recipeNo = 1
 

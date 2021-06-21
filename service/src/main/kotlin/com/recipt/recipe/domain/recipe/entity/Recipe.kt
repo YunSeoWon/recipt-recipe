@@ -1,15 +1,12 @@
 package com.recipt.recipe.domain.recipe.entity
 
-import com.recipt.core.enums.recipe.CategoryType
 import com.recipt.core.enums.recipe.OpenRange
 import com.recipt.recipe.application.recipe.dto.RecipeCreateCommand
 import com.recipt.recipe.application.recipe.dto.RecipeModifyCommand
 import com.recipt.recipe.domain.converter.OpenRangeConverter
 import com.recipt.recipe.domain.converter.Yn2BooleanConverter
-import com.recipt.recipe.domain.recipe.entity.RecipeCategory.Companion.NOTHING
-import com.recipt.recipe.domain.recipe.vo.Categories
+import com.recipt.recipe.domain.recipe.vo.RecipeCategory
 import com.recipt.recipe.domain.recipe.vo.Creator
-import net.bytebuddy.implementation.bind.annotation.Default
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -62,7 +59,7 @@ data class Recipe(
         private set
 
     @Embedded
-    var categories: Categories = Categories.NOTHING
+    var category: RecipeCategory = RecipeCategory.NOTHING
         private set
 
     var difficulty: Int = 0
@@ -78,7 +75,7 @@ data class Recipe(
         private set
 
     companion object {
-        fun create(command: RecipeCreateCommand, categories: List<RecipeCategory>) = Recipe(
+        fun create(command: RecipeCreateCommand) = Recipe(
             creator = Creator(
                 no = command.creatorNo,
                 name = command.creatorName
@@ -90,22 +87,22 @@ data class Recipe(
             this.title = command.title
             this.introduction = command.introduction
             this.thumbnailImageUrl = command.thumbnailImageUrl
-            this.categories = Categories(
-                mainIngredientCategory = categories.find { it.type == CategoryType.MAIN_INGREDIENT }?: NOTHING,
-                kindCategory =  categories.find { it.type == CategoryType.KIND }?: NOTHING
+            this.category = RecipeCategory(
+                mainCategoryType = command.mainCategoryType,
+                kindCategoryType = command.kindCategoryType
             )
             this.difficulty = command.difficulty
             this.openRange = command.openRange
         }
     }
 
-    fun modify(command: RecipeModifyCommand, categories: List<RecipeCategory>) {
+    fun modify(command: RecipeModifyCommand) {
         this.title = command.title
         this.introduction = command.introduction
         this.thumbnailImageUrl = command.thumbnailImageUrl
-        this.categories = Categories(
-            mainIngredientCategory = categories.find { it.type == CategoryType.MAIN_INGREDIENT }?: NOTHING,
-            kindCategory =  categories.find { it.type == CategoryType.KIND }?: NOTHING
+        this.category = RecipeCategory(
+            mainCategoryType = command.mainCategoryType,
+            kindCategoryType = command.kindCategoryType
         )
         this.difficulty = command.difficulty
         this.openRange = command.openRange
